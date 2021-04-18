@@ -10,7 +10,7 @@ on:
       - docker
       
 jobs:
-  whichever:
+  docker:
     runs-on: ubuntu-18.04
     steps:
       -
