@@ -48,3 +48,8 @@ jobs:
           
           docker run --detach --name webui --network redis academiaonline/simplilearn-dockercoins:latest-webui-testing
 
+          while true
+            do
+              sleep 10
+              docker logs worker 2>& 1 | grep "Coin found" && break
+            done
