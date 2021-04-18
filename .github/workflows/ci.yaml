@@ -1,0 +1,50 @@
+################################################################################
+#      Copyright (C) 2020        Sebastian Francisco Colomar Bauza             #
+#      SPDX-License-Identifier:  GPL-2.0-only                                  #
+################################################################################
+name: ci
+
+on:
+  push:
+    branches:
+      - docker
+      
+jobs:
+  whichever:
+    runs-on: ubuntu-18.04
+    steps:
+      -
+        name: checkout
+        uses: actions/checkout@v2
+      -
+        name: test
+        run: |
+        
+          set -x
+          
+          for service in hasher rng webui worker
+            do
+              docker build --tag academiaonline/simplilearn-dockercoins:latest-${service}-testing ${service}
+            done
+
+          for service in hasher redis rng
+            do
+              docker network create ${service}
+            done
+          
+          # --volumes XXX:/data will connect /data inside the container with the following folder outside the container: /var/lib/docker/volumes/XXX
+          docker run --detach --name redis --network redis --volumes redis:/data redis
+          
+          for service in hasher rng
+            do
+              docker run --detach --name ${service} --network ${service} academiaonline/simplilearn-dockercoins:latest-${service}-testing
+            done
+            
+          docker run --detach --name worker --network redis academiaonline/simplilearn-dockercoins:latest-worker-testing
+          for service in hasher rng
+            do
+              docker network connect ${service} worker
+            done
+          
+          docker run --detach --name webui --network redis academiaonline/simplilearn-dockercoins:latest-webui-testing
+
