@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:4-slim
 
 # The following information is typically supplied by the DEV team
 # Install CURL for testing purposes (NOT IN PRODUCTION)
