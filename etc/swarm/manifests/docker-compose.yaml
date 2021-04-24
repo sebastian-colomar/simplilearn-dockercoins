@@ -1,0 +1,26 @@
+networks:
+  hasher:
+    internal: true
+  redis:
+    internal: true
+  rng:
+    internal: true
+    
+services:
+  redis:
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 1
+    image: redis:alpine
+    networks:
+      - redis
+    volumes:
+      - redis:/data
+          
+version: '3.8'
+
+volumes:
+  redis:
