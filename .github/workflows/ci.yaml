@@ -43,9 +43,9 @@ jobs:
           app=worker
           network=redis
           docker run --detach --name ${app} --network ${network} academiaonline/simplilearn-dockercoins:latest-${app}-testing
-          for app in hasher rng
+          for network in hasher rng
             do
-              docker network connect ${app} worker
+              docker network connect ${network} ${app}
             done
           
           app=webui
