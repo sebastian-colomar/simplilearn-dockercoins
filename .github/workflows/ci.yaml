@@ -22,34 +22,40 @@ jobs:
         
           set -x
           
-          for service in hasher rng webui worker
+          for app in hasher rng webui worker
             do
-              docker build --tag academiaonline/simplilearn-dockercoins:latest-${service}-testing ${service}
+              docker build --tag academiaonline/simplilearn-dockercoins:latest-${app}-testing ${app}
             done
 
-          for service in hasher redis rng
+          for app in hasher redis rng
             do
-              docker network create ${service}
+              docker network create ${app}
             done
           
-          # --volumes XXX:/data will connect /data inside the container with the following folder outside the container: /var/lib/docker/volumes/XXX
-          docker run --detach --name redis --network redis --volume redis:/data redis
+          app=redis
+          docker run --detach --name ${app} --network ${app} --volume ${app}:/data ${app}
           
-          for service in hasher rng
+          for app in hasher rng
             do
-              docker run --detach --name ${service} --network ${service} academiaonline/simplilearn-dockercoins:latest-${service}-testing
+              docker run --detach --name ${app} --network ${app} academiaonline/simplilearn-dockercoins:latest-${app}-testing
             done
             
-          docker run --detach --name worker --network redis academiaonline/simplilearn-dockercoins:latest-worker-testing
-          for service in hasher rng
+          app=worker
+          network=redis
+          docker run --detach --name ${app} --network ${network} academiaonline/simplilearn-dockercoins:latest-${app}-testing
+          for app in hasher rng
             do
-              docker network connect ${service} worker
+              docker network connect ${app} worker
             done
           
-          docker run --detach --name webui --network redis academiaonline/simplilearn-dockercoins:latest-webui-testing
+          app=webui
+          network=redis
+          docker run --detach --name ${app} --network ${network} academiaonline/simplilearn-dockercoins:latest-${app}-testing
 
+          app=worker
+          pattern="Coin found"
           while true
             do
               sleep 10
-              docker logs worker 2>& 1 | grep "Coin found" && break
+              docker logs ${app} 2>& 1 | grep "${pattern}" && break
             done
