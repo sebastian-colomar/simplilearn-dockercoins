@@ -1,4 +1,5 @@
 networks:
+
   hasher:
     internal: true
   redis:
@@ -6,7 +7,20 @@ networks:
   rng:
     internal: true
     
+    
 services:
+
+  hasher:
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    image: academiaonline/simplilearn-dockercoins:hasher-latest
+    networks:
+      - hasher
+          
   redis:
     deploy:
       mode: replicated
@@ -20,7 +34,10 @@ services:
     volumes:
       - redis:/data
           
+          
 version: '3.8'
 
+
 volumes:
+
   redis:
