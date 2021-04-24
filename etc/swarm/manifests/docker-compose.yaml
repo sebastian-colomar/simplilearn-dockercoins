@@ -34,6 +34,40 @@ services:
     volumes:
       - redis:/data
           
+  rng:
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == worker
+    image: academiaonline/simplilearn-dockercoins:rng-latest
+    networks:
+      - rng
+          
+  webui:
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    image: academiaonline/simplilearn-dockercoins:webui-latest
+    networks:
+      - redis
+          
+  worker:
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    image: academiaonline/simplilearn-dockercoins:worker-latest
+    networks:
+      - hasher
+      - redis
+      - rng
+          
           
 version: '3.8'
 
