@@ -33,5 +33,7 @@ jobs:
         run: docker container run --detach --entrypoint node --name webui-test --network redis-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-webui webui.js
       - name: run-worker
         run: docker container run --detach --entrypoint python --name worker-test --network redis-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-worker worker.py
+      - name: connect-hasher
+        run: docker network connect hasher-network worker-test
       - name: logs
         run: while true ; do sleep 10 && docker container logs php-test 2>& 1 | grep 'Development Server (http://0.0.0.0:8080) started' && break ; done
