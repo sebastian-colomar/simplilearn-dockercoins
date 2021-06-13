@@ -29,5 +29,7 @@ jobs:
         run: docker container run --detach --entrypoint ruby --name hasher-test --network hasher-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-hasher hasher.rb
       - name: run-rng
         run: docker container run --detach --entrypoint python --name rng-test --network rng-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-rng rng.py
+      - name: run-webui
+        run: docker container run --detach --entrypoint node --name webui-test --network webui-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-webui webui.js
       - name: logs
         run: while true ; do sleep 10 && docker container logs php-test 2>& 1 | grep 'Development Server (http://0.0.0.0:8080) started' && break ; done
