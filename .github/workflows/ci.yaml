@@ -10,13 +10,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: build-hasher
-        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-hasher ${PWD}/hasher
+        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-hasher hasher
       - name: build-rng
-        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-rng ${PWD}/rng
+        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-rng rng
       - name: build-webui
-        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-webui ${PWD}/webui
+        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-webui webui
       - name: build-worker
-        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-worker ${PWD}/worker
+        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-worker worker
       - name: network-hasher
         run: docker network create hasher-network
       - name: network-redis
