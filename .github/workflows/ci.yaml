@@ -1,0 +1,32 @@
+name: ci
+on:
+  push:
+    branches:
+      - 2021-06
+jobs:
+  Dockerfile:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build-hasher
+        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-hasher ${PWD}/hasher
+      - name: build-rng
+        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-rng ${PWD}/rng
+      - name: build-webui
+        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-webui ${PWD}/webui
+      - name: build-worker
+        run: docker image build --file Dockerfile --tag index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-worker ${PWD}/worker
+      - name: network-hasher
+        run: docker network create hasher-network
+      - name: network-redis
+        run: docker network create hasher-redis
+      - name: network-rng
+        run: docker network create hasher-rng
+      - name: run
+        run: docker container run --detach --entrypoint php --name php-test --workdir /src index.docker.io/academiaonline/simplilearn-phpinfo:test -f index.php -S 0.0.0.0:8080
+      - name: top
+        run: while true ; do sleep 10 && docker container top php-test 2>& 1 | grep 'php -f index.php -S 0.0.0.0:8080' && break ; done
+      - name: logs
+        run: while true ; do sleep 10 && docker container logs php-test 2>& 1 | grep 'Development Server (http://0.0.0.0:8080) started' && break ; done
+© 2021 GitHub, Inc.
