@@ -1,3 +1,3 @@
 FROM python:alpine
 RUN pip install Flask
-COPY src /src
+COPY rng.py /src
