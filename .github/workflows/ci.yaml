@@ -34,8 +34,8 @@ jobs:
       - name: run-worker
         run: docker container run --detach --entrypoint python --name worker --network redis-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-worker worker.py
       - name: connect-hasher
-        run: docker network connect hasher-network worker-test
+        run: docker network connect hasher-network worker
       - name: connect-rng
-        run: docker network connect rng-network worker-test
+        run: docker network connect rng-network worker
       - name: logs
         run: while true ; do sleep 10 && docker container logs worker && docker container logs worker-test 2>& 1 | grep 'Coin found' && break ; done
