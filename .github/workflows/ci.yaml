@@ -26,7 +26,7 @@ jobs:
       - name: run-redis
         run: docker container run --detach --entrypoint docker-entrypoint.sh --name redis-test --network redis-network --volume redis-volume:/data --workdir /data redis:alpine redis-server
       - name: run-hasher
-        run: docker container run --detach --entrypoint ruby --name hasher-test --network hasher-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-hasher hasher.rb
+        run: find && docker container run --detach --entrypoint ruby --name hasher-test --network hasher-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-hasher hasher.rb
       - name: run-rng
         run: docker container run --detach --entrypoint python --name rng-test --network rng-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-rng rng.py
       - name: run-webui
