@@ -24,18 +24,18 @@ jobs:
       - name: network-rng
         run: docker network create rng-network
       - name: run-redis
-        run: docker container run --detach --entrypoint docker-entrypoint.sh --name redis-test --network redis-network --volume redis-volume:/data --workdir /data redis:alpine redis-server
+        run: docker container run --detach --entrypoint docker-entrypoint.sh --name redis --network redis-network --volume redis-volume:/data --workdir /data redis:alpine redis-server
       - name: run-hasher
-        run: docker container run --detach --entrypoint ruby --name hasher-test --network hasher-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-hasher hasher.rb
+        run: docker container run --detach --entrypoint ruby --name hasher --network hasher-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-hasher hasher.rb
       - name: run-rng
-        run: docker container run --detach --entrypoint python --name rng-test --network rng-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-rng rng.py
+        run: docker container run --detach --entrypoint python --name rng --network rng-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-rng rng.py
       - name: run-webui
-        run: docker container run --detach --entrypoint node --name webui-test --network redis-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-webui webui.js
+        run: docker container run --detach --entrypoint node --name webui --network redis-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-webui webui.js
       - name: run-worker
-        run: docker container run --detach --entrypoint python --name worker-test --network redis-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-worker worker.py
+        run: docker container run --detach --entrypoint python --name worker --network redis-network --workdir /src index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:test-worker worker.py
       - name: connect-hasher
         run: docker network connect hasher-network worker-test
       - name: connect-rng
         run: docker network connect rng-network worker-test
       - name: logs
-        run: while true ; do sleep 10 && docker container logs worker-test && docker container logs worker-test 2>& 1 | grep 'Coin found' && break ; done
+        run: while true ; do sleep 10 && docker container logs worker && docker container logs worker-test 2>& 1 | grep 'Coin found' && break ; done
