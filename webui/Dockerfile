@@ -1,2 +1,2 @@
 FROM node:4-slim
-RUN npm install express && run npm install redis
+RUN npm install express && npm install redis
