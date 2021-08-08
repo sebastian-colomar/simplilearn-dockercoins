@@ -26,6 +26,10 @@ sudo docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${
 SERVICE=worker
 sudo docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${SERVICE}/
 
+```
+
+```
+
 SERVICE=hasher
 sudo docker network create --driver bridge ${SERVICE}
 
@@ -42,7 +46,7 @@ NETWORK=${SERVICE}
 VOLUME=${SERVICE}
 WORKDIR=/data/
 sudo docker volume create ${SERVICE}
-sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --restart always --volume ${VOLUME}:${WORKDIR}:rw --workdir ${WORKDIR} library/redis:alpine ${CMD}
+sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --restart always --volume ${VOLUME}:${WORKDIR}:rw --workdir ${WORKDIR} library/redis:alpine ${CMD}
 
 sudo docker container logs ${SERVICE}
 sudo docker container stats --no-stream ${SERVICE}
@@ -54,7 +58,7 @@ SERVICE=hasher
 NETWORK=${SERVICE}
 VOLUME=${PWD}/${SERVICE}
 WORKDIR=/${SERVICE}/
-sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 sudo docker container logs ${SERVICE}
 sudo docker container stats --no-stream ${SERVICE}
@@ -66,7 +70,7 @@ SERVICE=rng
 NETWORK=${SERVICE}
 VOLUME=${PWD}/${SERVICE}
 WORKDIR=/${SERVICE}/
-sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 sudo docker container logs ${SERVICE}
 sudo docker container stats --no-stream ${SERVICE}
@@ -78,7 +82,7 @@ SERVICE=worker
 NETWORK=redis
 VOLUME=${PWD}/${SERVICE}
 WORKDIR=/${SERVICE}/
-sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 NETWORK=hasher
 sudo docker network connect ${NETWORK} ${SERVICE}
@@ -96,7 +100,7 @@ SERVICE=webui
 NETWORK=redis
 VOLUME=${PWD}/${SERVICE}
 WORKDIR=/${SERVICE}/
-sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --publish ${NODEPORT}:8080 --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --publish ${NODEPORT}:8080 --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 sudo docker container logs ${SERVICE}
 sudo docker container stats --no-stream ${SERVICE}
