@@ -26,13 +26,13 @@ SERVICE=worker
 sudo docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${SERVICE}/
 
 SERVICE=hasher
-sudo docker network create ${SERVICE}
+sudo docker network create --driver bridge ${SERVICE}
 
 SERVICE=redis
-sudo docker network create ${SERVICE}
+sudo docker network create --driver bridge ${SERVICE}
 
 SERVICE=rng
-sudo docker network create ${SERVICE}
+sudo docker network create --driver bridge ${SERVICE}
 
 CMD=redis-server
 ENTRYPOINT=docker-entrypoint.sh
