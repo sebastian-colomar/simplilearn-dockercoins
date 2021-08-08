@@ -66,7 +66,7 @@ SERVICE=rng
 NETWORK=${SERVICE}
 VOLUME=${PWD}/${SERVICE}
 WORKDIR=/${SERVICE}/
-sudo docker container run --detach --entrypoint ${ENTRYPOINT} --name ${SERVICE} --network ${NETWORK} --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+sudo docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 sudo docker container logs ${SERVICE}
 sudo docker container stats --no-stream ${SERVICE}
