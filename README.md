@@ -34,7 +34,7 @@ sudo docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${
 sudo docker image push ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
 
 ```
-## CREATE DOCKER NETWORKS AND CONTAINERS
+## CREATE DOCKER NETWORKS, VOLUMES AND CONTAINERS
 ```
 
 SERVICE=hasher
