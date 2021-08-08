@@ -1,5 +1,6 @@
 # simplilearn-dockercoins
 
+## CLONE GITHUB REPOSITORY
 ```
 GITHUB_USERNAME=academiaonline
 GITHUB_PROJECT=simplilearn-dockercoins
@@ -14,6 +15,7 @@ git pull
 git checkout ${GITHUB_BRANCH}
 git pull
 ```
+## BUILD AND PUSH DOCKER IMAGES
 ```
 SERVICE=hasher
 sudo docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${SERVICE}/
@@ -32,7 +34,7 @@ sudo docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${
 sudo docker image push ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
 
 ```
-
+## CREATE DOCKER NETWORKS AND CONTAINERS
 ```
 
 SERVICE=hasher
