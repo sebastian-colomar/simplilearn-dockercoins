@@ -48,7 +48,7 @@ ENTRYPOINT=ruby
 SERVICE=hasher
 NETWORK=${SERVICE}
 WORKDIR=/${SERVICE}/
-sudo docker container run --detach --entrypoint ${ENTRYPOINT} --name ${SERVICE} --network ${NETWORK} --restart always --volume ${SERVICE}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+sudo docker container run --detach --entrypoint ${ENTRYPOINT} --name ${SERVICE} --network ${NETWORK} --restart always --volume ${SERVICE}/:${WORKDIR}:ro --workdir ${WORKDIR} library/redis:alpine ${CMD}
 
 CMD=rng.py
 ENTRYPOINT=python
