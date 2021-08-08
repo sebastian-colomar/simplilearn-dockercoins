@@ -96,7 +96,7 @@ SERVICE=webui
 NETWORK=redis
 VOLUME=${PWD}/${SERVICE}
 WORKDIR=/${SERVICE}/
-sudo docker container run --detach --entrypoint ${ENTRYPOINT} --name ${SERVICE} --network ${NETWORK} --publish ${NODEPORT}:8080--restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+sudo docker container run --detach --entrypoint ${ENTRYPOINT} --name ${SERVICE} --network ${NETWORK} --publish ${NODEPORT}:8080 --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 sudo docker container logs ${SERVICE}
 sudo docker container stats --no-stream ${SERVICE}
