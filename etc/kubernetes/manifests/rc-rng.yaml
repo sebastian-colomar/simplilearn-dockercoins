@@ -24,7 +24,7 @@ spec:
             - 
               name: AUTHOR
               value: Sebastian
-          image: academiaonline/simplilearn-dockercoins:rng-test
+          image: academiaonline/simplilearn-dockercoins:test-rng
           name: rng-container
           ports:
             - 
