@@ -2,12 +2,10 @@
 
 ## CLONE GITHUB REPOSITORY
 ```
-export ENV_FILE=common.env
-export GITHUB_BRANCH=2021-08
-export GITHUB_PROJECT=simplilearn-dockercoins
-export GITHUB_RELEASE=test
-export GITHUB_USERNAME=academiaonline
-export NODEPORT=80
+GITHUB_BRANCH=2021-08
+GITHUB_PROJECT=simplilearn-dockercoins
+GITHUB_RELEASE=test
+GITHUB_USERNAME=academiaonline
 
 cd ${HOME}
 git clone https://github.com/${GITHUB_USERNAME}/${GITHUB_PROJECT}
@@ -37,7 +35,6 @@ docker image push ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVI
 ```
 ## CREATE DOCKER NETWORKS, VOLUMES AND CONTAINERS
 ```
-
 SERVICE=hasher
 docker network create --driver bridge ${SERVICE}
 
@@ -47,38 +44,43 @@ docker network create --driver bridge ${SERVICE}
 SERVICE=rng
 docker network create --driver bridge ${SERVICE}
 
+CPUS=0.010
+MEMORY=100M
+USER=1000620000:1000620000
+
+WORKDIR=/data/
+
 CMD=redis-server
-ENTRYPOINT=docker-entrypoint.sh
+ENTRYPOINT=/usr/local/bin/docker-entrypoint.sh
 SERVICE=redis
 NETWORK=${SERVICE}
 VOLUME=${SERVICE}
-WORKDIR=/data/
 docker volume create ${SERVICE}
-docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --restart always --volume ${VOLUME}:${WORKDIR}:rw --workdir ${WORKDIR} library/redis:alpine ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}:${WORKDIR}:rw --workdir ${WORKDIR} library/redis:alpine ${CMD}
 
 docker container logs ${SERVICE}
 docker container stats --no-stream ${SERVICE}
 docker container top ${SERVICE}
 
+WORKDIR=/app
+
 CMD=hasher.rb
-ENTRYPOINT=ruby
+ENTRYPOINT=/usr/local/bin/ruby
 SERVICE=hasher
 NETWORK=${SERVICE}
 VOLUME=${PWD}/${SERVICE}
-WORKDIR=/${SERVICE}/
-docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 docker container logs ${SERVICE}
 docker container stats --no-stream ${SERVICE}
 docker container top ${SERVICE}
 
 CMD=rng.py
-ENTRYPOINT=python
+ENTRYPOINT=/usr/local/bin/python
 SERVICE=rng
 NETWORK=${SERVICE}
 VOLUME=${PWD}/${SERVICE}
-WORKDIR=/${SERVICE}/
-docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 docker container logs ${SERVICE}
 docker container stats --no-stream ${SERVICE}
@@ -89,8 +91,7 @@ ENTRYPOINT=python
 SERVICE=worker
 NETWORK=redis
 VOLUME=${PWD}/${SERVICE}
-WORKDIR=/${SERVICE}/
-docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 NETWORK=hasher
 docker network connect ${NETWORK} ${SERVICE}
@@ -103,12 +104,13 @@ docker container stats --no-stream ${SERVICE}
 docker container top ${SERVICE}
 
 CMD=webui.js
-ENTRYPOINT=node
+ENTRYPOINT=/usr/local/bin/node
 SERVICE=webui
 NETWORK=redis
+NODEPORT=80
+TARGETPORT=8080
 VOLUME=${PWD}/${SERVICE}
-WORKDIR=/${SERVICE}/
-docker container run --cpus 0.010 --detach --entrypoint ${ENTRYPOINT} --memory 100M --name ${SERVICE} --network ${NETWORK} --read-only --publish ${NODEPORT}:8080 --restart always --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --publish ${NODEPORT}:${TARGETPORT} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 docker container logs ${SERVICE}
 docker container stats --no-stream ${SERVICE}
