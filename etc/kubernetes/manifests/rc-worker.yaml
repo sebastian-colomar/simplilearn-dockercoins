@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: worker-rc
+spec:
+  replicas: 2
+  selector:
+    worker-key: worker-value
+  template:
+    metadata:
+      labels:
+        worker-key: worker-value
+    spec:
+      containers:
+        -
+          args:
+            - worker.py
+          command:
+            - /usr/local/bin/python
+          env:
+            - 
+              name: HELLO
+              value: world
+            - 
+              name: AUTHOR
+              value: Sebastian
+          image: academiaonline/simplilearn-dockercoins:worker-test
+          name: worker-container
+          resources:
+            limits:
+              cpu: 10m
+              memory: 100M
+            requests:
+              cpu: 10m
+              memory: 20M
+          securityContext:
+            runAsGroup: 1000620000
+            runAsUser: 1000620000
+          volumeMounts:
+            -
+              mountPath: /app/worker.py
+              name: worker-volume
+              readOnly: true
+              subPath: worker.py
+          workingDir: /app/
+      volumes:
+        -
+          name: worker-volume
+          secret:
+            secretName: worker-secret
