@@ -30,10 +30,10 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 100M
         reservations:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 20M
     entrypoint: /usr/local/bin/ruby
     environment:
@@ -41,7 +41,7 @@ services:
       AUTHOR: Sebastian
     expose:
       - 8080
-    image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-hasher
+    image: academiaonline/simplilearn-dockercoins:test-hasher
     networks:
       - hasher-network
     read_only: true
@@ -66,10 +66,10 @@ services:
       replicas: 1
       resources:
         limits:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 100M
         reservations:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 20M
     entrypoint: /usr/local/bin/docker-entrypoint.sh
     environment:
@@ -97,10 +97,10 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 100M
         reservations:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 20M
     entrypoint: /usr/local/bin/python
     environment:
@@ -108,7 +108,7 @@ services:
       AUTHOR: Sebastian
     expose:
       - 8080
-    image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-rng
+    image: academiaonline/simplilearn-dockercoins:test-rng
     networks:
       - rng-network
     read_only: true
@@ -133,10 +133,10 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 100M
         reservations:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 20M
     entrypoint: /usr/local/bin/node
     environment:
@@ -144,7 +144,7 @@ services:
       AUTHOR: Sebastian
     expose:
       - 8080
-    image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-webui
+    image: academiaonline/simplilearn-dockercoins:test-webui
     networks:
       - redis-network
     ports:
@@ -164,7 +164,7 @@ services:
   webui-init:
     command:
       - -c
-      - rm -rf ${GITHUB_PROJECT}/ && git clone https://github.com/${GITHUB_USERNAME}/${GITHUB_PROJECT} && cd ${GITHUB_PROJECT}/ && git checkout 2021-08 && mv webui/files/* /shared/ && sleep infinity
+      - rm -rf simplilearn-dockercoins/ && git clone https://github.com/academiaonline/simplilearn-dockercoins && cd simplilearn-dockercoins/ && git checkout 2021-08 && cp -rf webui/files/* /shared/ && sleep infinity
     deploy:
       mode: global
       placement:
@@ -172,14 +172,12 @@ services:
           - node.role == worker
       resources:
         limits:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 100M
         reservations:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 20M
     entrypoint: /bin/sh
-    env_file:
-      - ./${ENV_FILE}
     environment:
       HELLO: bye
     image: alpine/git:latest
@@ -188,9 +186,9 @@ services:
     read_only: true
     user: root
     volumes:
-      - webui-init-volume:/internal/:rw
+      - webui-init-volume:/init/:rw
       - webui-volume:/shared/:rw
-    working_dir: /internal/
+    working_dir: /init/
   
   worker:
     command: 
@@ -203,16 +201,16 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 100M
         reservations:
-          cpus: "0.010"
+          cpus: '0.010'
           memory: 20M
     entrypoint: /usr/local/bin/python
     environment:
       HELLO: world
       AUTHOR: Sebastian
-    image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-worker
+    image: academiaonline/simplilearn-dockercoins:test-worker
     networks:
       - hasher-network
       - redis-network
