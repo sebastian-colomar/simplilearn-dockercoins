@@ -24,7 +24,7 @@ spec:
             - 
               name: AUTHOR
               value: Sebastian
-          image: academiaonline/simplilearn-dockercoins:webui-test
+          image: academiaonline/simplilearn-dockercoins:test-webui
           name: webui-container
           ports:
             - 
