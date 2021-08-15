@@ -81,7 +81,7 @@ services:
     networks:
       - redis-network
     read_only: true
-    user: '1000620000:1000620000'
+    user: 'redis:redis'
     volumes:
       - redis-volume:/data/:rw
     working_dir: /data/
