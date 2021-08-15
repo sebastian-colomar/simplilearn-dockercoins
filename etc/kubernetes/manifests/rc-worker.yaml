@@ -24,7 +24,7 @@ spec:
             - 
               name: AUTHOR
               value: Sebastian
-          image: academiaonline/simplilearn-dockercoins:worker-test
+          image: academiaonline/simplilearn-dockercoins:test-worker
           name: worker-container
           resources:
             limits:
