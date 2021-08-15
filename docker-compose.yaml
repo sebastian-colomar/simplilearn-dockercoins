@@ -229,5 +229,6 @@ services:
 version: '3.8'
 
 volumes:
+  redis-volume:
   webui-init-volume:
   webui-volume:
