@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: redis-rc
+spec:
+  replicas: 2
+  selector:
+    redis-key: redis-value
+  template:
+    metadata:
+      labels:
+        redis-key: redis-value
+    spec:
+      containers:
+        -
+          args:
+            - redis-server
+          command:
+            - /usr/local/bin/docker-entrypoint.sh
+          env:
+            - 
+              name: HELLO
+              value: world
+            - 
+              name: AUTHOR
+              value: Sebastian
+          image: library/redis:alpine
+          name: redis-container
+          ports:
+            - 
+              containerPort: 6379
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 10m
+              memory: 100M
+            requests:
+              cpu: 10m
+              memory: 20M
+          securityContext:
+            runAsGroup: 1000620000
+            runAsUser: 1000620000
+          volumeMounts:
+            -
+              mountPath: /data/
+              name: redis-volume
+              readOnly: false
+          workingDir: /data/
+      volumes:
+        -
+          name: redis-volume
+          emptyDir: {}
