@@ -37,9 +37,6 @@ spec:
             requests:
               cpu: 10m
               memory: 20M
-          securityContext:
-            runAsGroup: 1000620000
-            runAsUser: 1000620000
           volumeMounts:
             -
               mountPath: /app/rng.py
