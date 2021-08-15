@@ -157,12 +157,12 @@ services:
         uid: '65534'
     user: '65534'
     volumes:
-      - webui-volume:/app/:ro
+      - webui-volume:/app/files/:ro
     working_dir: /app/
   webui-init:
     command:
       - -c
-      - rm -rf ${GITHUB_PROJECT}/ && git clone https://github.com/${GITHUB_USERNAME}/${GITHUB_PROJECT} && cd ${GITHUB_PROJECT}/ && git checkout 2021-08 && mv webui/files/ /shared/ && sleep infinity
+      - rm -rf ${GITHUB_PROJECT}/ && git clone https://github.com/${GITHUB_USERNAME}/${GITHUB_PROJECT} && cd ${GITHUB_PROJECT}/ && git checkout 2021-08 && mv webui/files/* /shared/ && sleep infinity
     deploy:
       mode: global
       placement:
