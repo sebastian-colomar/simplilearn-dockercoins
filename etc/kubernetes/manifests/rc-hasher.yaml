@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: hasher-rc
+spec:
+  replicas: 2
+  selector:
+    hasher-key: hasher-value
+  template:
+    metadata:
+      labels:
+        hasher-key: hasher-value
+    spec:
+      containers:
+        -
+          args:
+            - hasher.rb
+          command:
+            - /usr/local/bin/ruby
+          env:
+            - 
+              name: HELLO
+              value: world
+            - 
+              name: AUTHOR
+              value: Sebastian
+          image: academiaonline/simplilearn-dockercoins:hasher-test
+          name: hasher-container
+          ports:
+            - 
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 10m
+              memory: 100M
+            requests:
+              cpu: 10m
+              memory: 20M
+          securityContext:
+            runAsGroup: 1000620000
+            runAsUser: 1000620000
+          volumeMounts:
+            -
+              mountPath: /app/hasher.rb
+              name: hasher-volume
+              readOnly: true
+              subPath: hasher.rb
+          workingDir: /app/
+      volumes:
+        -
+          name: hasher-volume
+          secret:
+            secretName: hasher-secret
