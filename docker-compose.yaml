@@ -1,0 +1,233 @@
+networks:
+  hasher-network:
+    internal: true
+  redis-network:
+    internal: true
+  rng-network:
+    internal: true
+  webui-init-network:
+    internal: false
+
+secrets:
+  hasher-secret:
+    file: ./hasher/hasher.rb
+  rng-secret:
+    file: ./rng/rng.py
+  webui-secret:
+    file: ./webui/webui.js
+  worker-secret:
+    file: ./worker/worker.py
+  
+services:
+  hasher:
+    command: 
+      - hasher.rb
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.010"
+          memory: 100M
+        reservations:
+          cpus: "0.010"
+          memory: 100M
+    entrypoint: /usr/local/bin/ruby
+    environment:
+      HELLO: world
+      AUTHOR: Sebastian
+    expose:
+      - 8080
+    image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-hasher
+    networks:
+      - hasher-network
+    read_only: true
+    secrets:
+      -
+        gid: '65534'
+        mode: 0400
+        source: hasher-secret
+        target: /app/hasher.rb
+        uid: '65534'
+    user: '65534'
+    working_dir: /app/
+  
+  redis:
+    command: 
+      - redis-server
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.010"
+          memory: 100M
+        reservations:
+          cpus: "0.010"
+          memory: 100M
+    entrypoint: /usr/local/bin/docker-entrypoint.sh
+    environment:
+      HELLO: world
+      AUTHOR: Sebastian
+    expose:
+      - 6379
+    image: library/redis:alpine
+    networks:
+      - redis-network
+    read_only: true
+    user: root
+    volumes:
+      - redis-volume:/data/:rw
+    working_dir: /data/
+  
+  rng:
+    command: 
+      - rng.py
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.010"
+          memory: 100M
+        reservations:
+          cpus: "0.010"
+          memory: 100M
+    entrypoint: /usr/local/bin/python
+    environment:
+      HELLO: world
+      AUTHOR: Sebastian
+    expose:
+      - 8080
+    image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-rng
+    networks:
+      - rng-network
+    read_only: true
+    secrets:
+      -
+        gid: '65534'
+        mode: 0400
+        source: rng-secret
+        target: /app/rng.py
+        uid: '65534'
+    user: '65534'
+    working_dir: /app/
+  
+  webui:
+    command: 
+      - webui.js
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.010"
+          memory: 100M
+        reservations:
+          cpus: "0.010"
+          memory: 100M
+    entrypoint: /usr/local/bin/node
+    environment:
+      HELLO: world
+      AUTHOR: Sebastian
+    expose:
+      - 8080
+    image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-webui
+    networks:
+      - redis-network
+    read_only: true
+    secrets:
+      -
+        gid: '65534'
+        mode: 0400
+        source: webui-secret
+        target: /app/webui.js
+        uid: '65534'
+    user: '65534'
+    volumes:
+      - webui-volume:/app/:ro
+    working_dir: /app/
+  webui-init:
+    command:
+      - -c
+      - rm -rf ${GITHUB_PROJECT}/ && git clone https://github.com/${GITHUB_USERNAME}/${GITHUB_PROJECT} && cd ${GITHUB_PROJECT}/ && git checkout 2021-08 && mv webui/files/ /shared/ && sleep infinity
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == worker
+      resources:
+        limits:
+          cpus: "0.010"
+          memory: 100M
+        reservations:
+          cpus: "0.010"
+          memory: 100M
+    entrypoint: /bin/sh
+    env_file:
+      - ./${ENV_FILE}
+    environment:
+      HELLO: bye
+    image: alpine/git:latest
+    networks:
+      - webui-init-network
+    read_only: true
+    user: root
+    volumes:
+      - webui-init-volume:/internal/:rw
+      - webui-volume:/shared/:rw
+    working_dir: /internal/
+  
+  worker:
+    command: 
+      - worker.py
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.010"
+          memory: 100M
+        reservations:
+          cpus: "0.010"
+          memory: 100M
+    entrypoint: /usr/local/bin/python
+    environment:
+      HELLO: world
+      AUTHOR: Sebastian
+    image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-worker
+    networks:
+      - hasher-network
+      - redis-network
+      - rng-network
+    read_only: true
+    secrets:
+      -
+        gid: '65534'
+        mode: 0400
+        source: worker-secret
+        target: /app/worker.py
+        uid: '65534'
+    user: '65534'
+    working_dir: /app/
+
+version: '3.8'
+
+volumes:
+  webui-init-volume:
+  webui-volume:
