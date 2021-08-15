@@ -117,6 +117,5 @@ docker container top ${SERVICE}
 ```
 ## DEPLOY WITH DOCKER SWARM
 ```
-source ${ENV_FILE}
 docker stack deploy --compose-file docker-compose.yaml ${GITHUB_PROJECT}_${GITHUB_RELEASE}
 ```
