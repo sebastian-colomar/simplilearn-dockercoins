@@ -8,8 +8,9 @@ GITHUB_RELEASE=test
 GITHUB_USERNAME=academiaonline
 
 cd ${HOME}
+rm -rf ${GITHUB_PROJECT}/
 git clone https://github.com/${GITHUB_USERNAME}/${GITHUB_PROJECT}
-cd ${GITHUB_PROJECT}
+cd ${GITHUB_PROJECT}/
 git pull
 git checkout ${GITHUB_BRANCH}
 git pull
