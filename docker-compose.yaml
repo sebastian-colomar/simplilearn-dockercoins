@@ -34,7 +34,7 @@ services:
           memory: 100M
         reservations:
           cpus: "0.010"
-          memory: 100M
+          memory: 20M
     entrypoint: /usr/local/bin/ruby
     environment:
       HELLO: world
@@ -70,7 +70,7 @@ services:
           memory: 100M
         reservations:
           cpus: "0.010"
-          memory: 100M
+          memory: 20M
     entrypoint: /usr/local/bin/docker-entrypoint.sh
     environment:
       HELLO: world
@@ -101,7 +101,7 @@ services:
           memory: 100M
         reservations:
           cpus: "0.010"
-          memory: 100M
+          memory: 20M
     entrypoint: /usr/local/bin/python
     environment:
       HELLO: world
@@ -137,7 +137,7 @@ services:
           memory: 100M
         reservations:
           cpus: "0.010"
-          memory: 100M
+          memory: 20M
     entrypoint: /usr/local/bin/node
     environment:
       HELLO: world
@@ -176,7 +176,7 @@ services:
           memory: 100M
         reservations:
           cpus: "0.010"
-          memory: 100M
+          memory: 20M
     entrypoint: /bin/sh
     env_file:
       - ./${ENV_FILE}
@@ -207,7 +207,7 @@ services:
           memory: 100M
         reservations:
           cpus: "0.010"
-          memory: 100M
+          memory: 20M
     entrypoint: /usr/local/bin/python
     environment:
       HELLO: world
