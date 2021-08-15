@@ -147,6 +147,8 @@ services:
     image: ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-webui
     networks:
       - redis-network
+    ports:
+      - 80:8080
     read_only: true
     secrets:
       -
