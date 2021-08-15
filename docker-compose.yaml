@@ -47,12 +47,12 @@ services:
     read_only: true
     secrets:
       -
-        gid: '65534'
+        gid: '1000620000'
         mode: 0400
         source: hasher-secret
         target: /app/hasher.rb
-        uid: '65534'
-    user: '65534'
+        uid: '1000620000'
+    user: '1000620000'
     working_dir: /app/
   
   redis:
@@ -81,7 +81,7 @@ services:
     networks:
       - redis-network
     read_only: true
-    user: '65534'
+    user: '1000620000:1000620000'
     volumes:
       - redis-volume:/data/:rw
     working_dir: /data/
@@ -114,12 +114,12 @@ services:
     read_only: true
     secrets:
       -
-        gid: '65534'
+        gid: '1000620000'
         mode: 0400
         source: rng-secret
         target: /app/rng.py
-        uid: '65534'
-    user: '65534'
+        uid: '1000620000'
+    user: '1000620000:1000620000'
     working_dir: /app/
   
   webui:
@@ -152,12 +152,12 @@ services:
     read_only: true
     secrets:
       -
-        gid: '65534'
+        gid: '1000620000'
         mode: 0400
         source: webui-secret
         target: /app/webui.js
-        uid: '65534'
-    user: '65534'
+        uid: '1000620000'
+    user: '1000620000:1000620000'
     volumes:
       - webui-volume:/app/files/:ro
     working_dir: /app/
@@ -220,12 +220,12 @@ services:
     read_only: true
     secrets:
       -
-        gid: '65534'
+        gid: '1000620000'
         mode: 0400
         source: worker-secret
         target: /app/worker.py
-        uid: '65534'
-    user: '65534'
+        uid: '1000620000'
+    user: '1000620000:1000620000'
     working_dir: /app/
 
 version: '3.8'
