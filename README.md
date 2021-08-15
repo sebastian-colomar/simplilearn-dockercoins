@@ -2,7 +2,6 @@
 
 ## CLONE GITHUB REPOSITORY
 ```
-export ADVERTISE_ADDR=$( ip route | grep dev.eth0.proto.kernel | awk '{ print $9 }' )
 export ENV_FILE=common.env
 export GITHUB_BRANCH=2021-08
 export GITHUB_PROJECT=simplilearn-dockercoins
@@ -119,6 +118,5 @@ docker container top ${SERVICE}
 ## DEPLOY WITH DOCKER SWARM
 ```
 source ${ENV_FILE}
-docker swarm init --advertise-addr ${ADVERTISE_ADDR}
 docker stack deploy --compose-file docker-compose.yaml ${GITHUB_PROJECT}_${GITHUB_RELEASE}
 ```
