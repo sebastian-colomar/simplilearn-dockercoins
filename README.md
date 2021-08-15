@@ -121,3 +121,13 @@ docker container top ${SERVICE}
 ```
 docker stack deploy --compose-file docker-compose.yaml ${GITHUB_PROJECT}_${GITHUB_RELEASE}
 ```
+## DEPLOY WITH KUBERNETES/OPENSHIFT
+```
+oc new-project ${GITHUB_PROJECT}-${GITHUB_RELEASE}
+kubectl create namespace ${GITHUB_PROJECT}-${GITHUB_RELEASE}
+kubectl create secret generic hasher-secret --from-file hasher/hasher.rb --namespace ${GITHUB_PROJECT}-${GITHUB_RELEASE}
+kubectl create secret generic rng-secret --from-file rng/rng.py --namespace ${GITHUB_PROJECT}-${GITHUB_RELEASE}
+kubectl create secret generic webui-secret --from-file webui/webui.js --namespace ${GITHUB_PROJECT}-${GITHUB_RELEASE}
+kubectl create secret generic worker-secret --from-file worker/worker.py --namespace ${GITHUB_PROJECT}-${GITHUB_RELEASE}
+kubectl apply --filename etc/kubernetes/manifests/ --namespace ${GITHUB_PROJECT}-${GITHUB_RELEASE}
+```
