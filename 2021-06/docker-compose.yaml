@@ -1,0 +1,82 @@
+networks:
+  hasher-network:
+    internal: true
+  redis-network:
+    internal: true
+  rng-network:
+    internal: true
+services:
+  hasher:
+    command: hasher.rb
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    entrypoint: ruby
+    image: index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:1.0-hasher
+    networks:
+      - hasher-network
+    working_dir: /src
+  redis:
+    command: redis-server
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 1
+    entrypoint: docker-entrypoint.sh
+    image: redis:alpine
+    networks:
+      - redis-network
+    volumes:
+      - redis-volume:/data
+    working_dir: /data
+  rng:
+    command: rng.py
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    entrypoint: python
+    image: index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:1.0-rng
+    networks:
+      - rng-network
+    working_dir: /src
+  webui:
+    command: webui.js
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    entrypoint: node
+    image: index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:1.0-webui
+    networks:
+      - redis-network
+    ports:
+      - 80:8080
+    working_dir: /src
+  worker:
+    command: worker.py
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    entrypoint: python
+    image: index.docker.io/academiaonline/simplilearn-dockercoins-2021-06:1.0-worker
+    networks:
+      - hasher-network
+      - redis-network
+      - rng-network
+    working_dir: /src
+version: '3.8'
+volumes:
+  redis-volume:
