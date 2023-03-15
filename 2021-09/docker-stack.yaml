@@ -1,0 +1,109 @@
+# git clone https://github.com/academiaonline/simplilearn-dockercoins 
+# cd simplilearn-dockercoins/
+# git checkout 2021-09
+# alias docker='sudo docker'
+# docker image build --file Dockerfile-hasher-copy --tag academiaonline/simplilearn-dockercoins:copy-hasher hasher
+# docker image build --file Dockerfile-rng-copy --tag academiaonline/simplilearn-dockercoins:copy-rng rng
+# docker image build --file Dockerfile-webui-copy --tag academiaonline/simplilearn-dockercoins:copy-webui webui
+# docker image build --file Dockerfile-worker-copy --tag academiaonline/simplilearn-dockercoins:copy-worker worker
+# docker login
+# docker image push academiaonline/simplilearn-dockercoins:copy-hasher 
+# docker image push academiaonline/simplilearn-dockercoins:copy-rng 
+# docker image push academiaonline/simplilearn-dockercoins:copy-webui 
+# docker image push academiaonline/simplilearn-dockercoins:copy-worker 
+# docker swarm init
+
+# docker swarm join-token worker
+# docker stack deploy --compose-file docker-stack.yaml SIMPLILEARN-DOCKERCOINS-HA
+
+networks:
+  hasher:
+    internal: true
+  redis:
+    internal: true
+  rng:
+    internal: true    
+    
+services:
+  hasher:
+    command: hasher.rb
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    entrypoint: ruby
+    image: academiaonline/simplilearn-dockercoins:copy-hasher
+    networks:
+      - hasher
+    read_only: true
+  redis:
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 1
+    image: library/redis:6.2.5-alpine3.14@sha256:649d5317016d601ac7d6a7b7ef56b6d96196fb7df433d10143189084d52ee6f7
+    networks:
+      - redis
+    read_only: true
+    volumes:
+      - redis:/data:rw          
+  rng:
+    command: rng.py
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    entrypoint: python
+    image: academiaonline/simplilearn-dockercoins:copy-rng
+    networks:
+      - rng          
+    read_only: true
+    volumes:
+      - rng_pycache:/usr/local/lib/python3.9/__pycache__/:rw
+      - rng_http_pycache:/usr/local/lib/python3.9/http/__pycache__/:rw
+  webui:
+    command: webui.js
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    entrypoint: node
+    image: academiaonline/simplilearn-dockercoins:copy-webui
+    networks:
+      - redis
+    ports:
+      - 82:8080          
+    read_only: true
+  worker:
+    command: worker.py
+    deploy:
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    entrypoint: python
+    image: academiaonline/simplilearn-dockercoins:copy-worker
+    networks:
+      - hasher
+      - redis
+      - rng
+    read_only: true
+    volumes:
+      - worker_pycache:/usr/local/lib/python3.9/distutils/__pycache__/:rw
+          
+version: '3.8'
+
+volumes:
+  redis:
+  rng_pycache:
+  rng_http_pycache:
+  worker_pycache:

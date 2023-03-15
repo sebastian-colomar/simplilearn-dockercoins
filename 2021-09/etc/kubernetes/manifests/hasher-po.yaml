@@ -1,0 +1,82 @@
+# git clone https://github.com/academiaonline/simplilearn-dockercoins 
+# cd simplilearn-dockercoins/
+# git checkout 2021-09
+# alias docker='sudo docker'
+# docker image build --file Dockerfile-hasher --tag academiaonline/simplilearn-dockercoins:latest-hasher /mnt/
+# docker image build --file Dockerfile-rng --tag academiaonline/simplilearn-dockercoins:latest-rng /mnt/
+# docker image build --file Dockerfile-webui --tag academiaonline/simplilearn-dockercoins:latest-webui /mnt/
+# docker image build --file Dockerfile-worker --tag academiaonline/simplilearn-dockercoins:latest-worker /mnt/
+# docker login
+# docker image push academiaonline/simplilearn-dockercoins:latest-hasher 
+# docker image push academiaonline/simplilearn-dockercoins:latest-rng 
+# docker image push academiaonline/simplilearn-dockercoins:latest-webui 
+# docker image push academiaonline/simplilearn-dockercoins:latest-worker 
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hasher-po
+spec:
+  containers:
+    -
+      args: 
+        - hasher.rb
+      command:
+        - ruby
+      env:
+        -
+          name: AUTHOR
+          value: "Sebastian Colomar"
+      image: academiaonline/simplilearn-dockercoins:latest-hasher
+      livenessProbe:
+        tcpSocket:
+          port: 8080
+      name: hasher-container
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 8080
+      resources:
+        limits:
+          cpu: 100m
+          memory: 100M
+        requests: 
+          cpu: 100m
+          memory: 100M
+      volumeMounts:
+        -
+          mountPath: /app/
+          name: hasher-volume
+          readOnly: true
+      workingDir: /app/
+  initContainers:
+    -
+      args: 
+        - https://raw.githubusercontent.com/academiaonline/simplilearn-dockercoins/2021-09/hasher/hasher.rb
+      command:
+        - wget
+      env:
+        - 
+          name: AUTHOR
+          value: "Sebastian Colomar"
+      image: library/busybox:1.33.1-uclibc@sha256:febcf61cd6e1ac9628f6ac14fa40836d16f3c6ddef3b303ff0321606e55ddd0b
+      name: hasher-wget
+      resources:
+        limits:
+          cpu: 100m
+          memory: 100M
+        requests:
+          cpu: 100m
+          memory: 100M
+      volumeMounts:
+        -
+          mountPath: /downloads/
+          name: hasher-volume
+          readOnly: false      
+      workingDir: /downloads/
+  volumes:
+    -
+      emptyDir:
+        medium: Memory
+        sizeLimit: 1M
+      name: hasher-volume

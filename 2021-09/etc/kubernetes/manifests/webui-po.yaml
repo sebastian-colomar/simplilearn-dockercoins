@@ -1,0 +1,102 @@
+# git clone https://github.com/academiaonline/simplilearn-dockercoins 
+# cd simplilearn-dockercoins/
+# git checkout 2021-09
+# alias docker='sudo docker'
+# docker image build --file Dockerfile-hasher --tag academiaonline/simplilearn-dockercoins:latest-hasher /mnt/
+# docker image build --file Dockerfile-rng --tag academiaonline/simplilearn-dockercoins:latest-rng /mnt/
+# docker image build --file Dockerfile-webui --tag academiaonline/simplilearn-dockercoins:latest-webui /mnt/
+# docker image build --file Dockerfile-worker --tag academiaonline/simplilearn-dockercoins:latest-worker /mnt/
+# docker login
+# docker image push academiaonline/simplilearn-dockercoins:latest-hasher 
+# docker image push academiaonline/simplilearn-dockercoins:latest-rng 
+# docker image push academiaonline/simplilearn-dockercoins:latest-webui 
+# docker image push academiaonline/simplilearn-dockercoins:latest-worker
+
+# docker image build --file Dockerfile-git --tag academiaonline/git:latest /mnt/
+# docker image push academiaonline/git:latest
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webui-po
+spec:
+  containers:
+    -
+      args: 
+        - webui.js
+      command:
+        - node
+      env:
+        -
+          name: AUTHOR
+          value: "Sebastian Colomar"
+      image: academiaonline/simplilearn-dockercoins:latest-webui
+      livenessProbe:
+        tcpSocket:
+          port: 8080
+      name: webui-container
+      readinessProbe:
+        httpGet:
+          path: /index.html
+          port: 8080
+      resources:
+        limits:
+          cpu: 100m
+          memory: 100M
+        requests: 
+          cpu: 100m
+          memory: 100M
+      volumeMounts:
+        -
+          mountPath: /app/
+          name: webui-volume
+          readOnly: true
+      workingDir: /app/
+  initContainers:
+    -
+      args:
+        - >-
+          git clone https://github.com/ganimedes-colomar/phpinfo ;
+          cd phpinfo ;
+          git checkout 2021-09-santander ;
+          git clone https://github.com/academiaonline/simplilearn-dockercoins ;
+          cd simplilearn-dockercoins/ ;
+          git checkout 2021-09 ;
+          cp -r -v webui/* /app/ ;
+      command:
+        - /bin/sh
+        - -c
+      env:
+        - 
+          name: AUTHOR
+          value: "Sebastian Colomar"
+      image: alpine/git:1.0.30@sha256:0595334722a2d486ed7c1a10a9138180f052343d5569942ecceb88d6e7fd1c0f
+      name: git-container
+      resources:
+        limits:
+          cpu: 100m
+          memory: 100M
+        requests:
+          cpu: 100m
+          memory: 100M
+      volumeMounts:
+        -
+          mountPath: /app/
+          name: webui-volume
+          readOnly: false      
+        -
+          mountPath: /downloads/
+          name: webui-downloads-volume
+          readOnly: false      
+      workingDir: /downloads/
+  volumes:
+    -
+      emptyDir:
+        medium: Memory
+        sizeLimit: 100Mi
+      name: webui-volume
+    -
+      emptyDir:
+        medium: Memory
+        sizeLimit: 100Mi
+      name: webui-downloads-volume

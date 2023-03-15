@@ -1,0 +1,3 @@
+FROM  library/ruby:3.0.2-alpine3.13@sha256:415b144dbb28a697c4dfdee940f1d36e78d19c82e368711868fad4018b8c0642
+RUN   apk add build-base && gem install sinatra thin
+COPY  hasher.rb .

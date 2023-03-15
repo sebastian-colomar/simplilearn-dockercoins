@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ReplicationController
+metadata: 
+  name: rng-rc
+spec:
+  replicas: 2
+  selector: 
+    app: rng
+  template:
+    metadata:
+      labels:
+        app: rng
+    spec:
+      containers:
+        -
+          args: 
+            - rng.py
+          command:
+            - python
+          env:
+            -
+              name: AUTHOR
+              value: "Sebastian Colomar"
+          image: academiaonline/simplilearn-dockercoins:latest-rng
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+          name: rng-container
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100M
+            requests: 
+              cpu: 100m
+              memory: 100M
+          volumeMounts:
+            -
+              mountPath: /app/rng.py
+              name: rng-volume
+              readOnly: true
+              subPath: rng.py
+            -
+              mountPath: /usr/local/lib/python3.9/__pycache__/
+              name: rng-pycache-volume
+              readOnly: false
+            -
+              mountPath: /usr/local/lib/python3.9/http/__pycache__/
+              name: rng-http-pycache-volume
+              readOnly: false
+          workingDir: /app/
+      volumes:
+        -
+          configMap:
+            defaultMode: 0400
+            items:
+              -
+                key: rng.py
+                mode: 0400
+                path: rng.py
+            name: rng-cm
+          name: rng-volume
+        -
+          emptyDir:
+            medium: Memory
+            sizeLimit: 100M
+          name: rng-pycache-volume
+        -
+          emptyDir:
+            medium: Memory
+            sizeLimit: 100M
+          name: rng-http-pycache-volume

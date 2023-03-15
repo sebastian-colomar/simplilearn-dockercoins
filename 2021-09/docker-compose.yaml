@@ -1,0 +1,79 @@
+# git clone https://github.com/academiaonline/simplilearn-dockercoins 
+# cd simplilearn-dockercoins/
+# git checkout 2021-09
+# alias docker='sudo docker'
+# docker image build --file Dockerfile-hasher --tag local/simplilearn-dockercoins:test-hasher /mnt/
+# docker image build --file Dockerfile-rng --tag local/simplilearn-dockercoins:test-rng /mnt/
+# docker image build --file Dockerfile-webui --tag local/simplilearn-dockercoins:test-webui /mnt/
+# docker image build --file Dockerfile-worker --tag local/simplilearn-dockercoins:test-worker /mnt/ 
+# docker swarm init
+# docker stack deploy --compose-file docker-compose.yaml SIMPLILEARN-DOCKERCOINS
+
+networks:
+  hasher:
+    internal: true
+  redis:
+    internal: true
+  rng:
+    internal: true    
+    
+services:
+  hasher:
+    command: hasher.rb
+    entrypoint: ruby
+    image: local/simplilearn-dockercoins:test-hasher
+    networks:
+      - hasher
+    read_only: true
+    volumes:
+      - ./hasher/hasher.rb:/hasher.rb:ro
+  redis:
+    image: library/redis:6.2.5-alpine3.14@sha256:649d5317016d601ac7d6a7b7ef56b6d96196fb7df433d10143189084d52ee6f7
+    networks:
+      - redis
+    read_only: true
+    volumes:
+      - redis:/data:rw          
+  rng:
+    command: rng.py
+    entrypoint: python
+    image: local/simplilearn-dockercoins:test-rng
+    networks:
+      - rng          
+    read_only: true
+    volumes:
+      - ./rng/rng.py:/rng.py:ro
+      - rng_pycache:/usr/local/lib/python3.9/__pycache__/:rw
+      - rng_http_pycache:/usr/local/lib/python3.9/http/__pycache__/:rw
+  webui:
+    command: webui.js
+    entrypoint: node
+    image: local/simplilearn-dockercoins:test-webui
+    networks:
+      - redis
+    ports:
+      - 81:8080          
+    read_only: true
+    volumes:
+      - ./webui/webui.js:/webui.js:ro
+      - ./webui/files/:/files/:ro
+  worker:
+    command: worker.py
+    entrypoint: python
+    image: local/simplilearn-dockercoins:test-worker
+    networks:
+      - hasher
+      - redis
+      - rng
+    read_only: true
+    volumes:
+      - ./worker/worker.py:/worker.py:ro
+      - worker_pycache:/usr/local/lib/python3.9/distutils/__pycache__/:rw
+          
+version: '3.8'
+
+volumes:
+  redis:
+  rng_pycache:
+  rng_http_pycache:
+  worker_pycache:

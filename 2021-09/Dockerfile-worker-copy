@@ -1,0 +1,3 @@
+FROM  library/python:alpine
+RUN   pip install redis requests
+COPY  worker.py .

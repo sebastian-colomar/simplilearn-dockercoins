@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ReplicationController
+metadata: 
+  name: redis-rc
+spec:
+  replicas: 1
+  selector: 
+    app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        -
+          args: 
+            - redis-server
+          command:
+            - docker-entrypoint.sh
+          env:
+            -
+              name: AUTHOR
+              value: "Sebastian Colomar"
+          image: library/redis:6.2.5-alpine3.14@sha256:649d5317016d601ac7d6a7b7ef56b6d96196fb7df433d10143189084d52ee6f7
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+          name: redis-container
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli INFO
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100M
+            requests: 
+              cpu: 100m
+              memory: 100M
+          volumeMounts:
+            -
+              mountPath: /data/
+              name: redis-volume
+              readOnly: false
+          workingDir: /data/
+      volumes:
+        -
+          persistentVolumeClaim:
+            claimName: redis-pvc
+            readOnly: false
+          name: redis-volume
