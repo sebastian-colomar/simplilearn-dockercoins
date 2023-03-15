@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rng-netpol
+spec:
+  ingress:
+    -
+      from:
+        -
+          podSelector:
+            matchLabels:
+              worker: 'true'
+      ports:
+        -
+          port: 8080
+          protocol: TCP
+  podSelector:
+    matchLabels:
+      rng: 'true'
+  policyTypes:
+    - Ingress

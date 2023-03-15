@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-netpol
+spec:
+  ingress:
+    -
+      from:
+        -
+          podSelector:
+            matchLabels:
+              webui: 'true'
+        -
+          podSelector:
+            matchLabels:
+              worker: 'true'
+      ports:
+        -
+          port: 6379
+          protocol: TCP
+  podSelector:
+    matchLabels:
+      redis: 'true'
+  policyTypes:
+    - Ingress

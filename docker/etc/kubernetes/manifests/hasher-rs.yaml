@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: hasher-rs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      hasher: "true"
+  template:
+    metadata:
+      labels:
+        hasher: "true"
+    spec:
+      containers:
+        -
+          image: academiaonline/simplilearn-dockercoins:hasher-latest
+          name: hasher-container

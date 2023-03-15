@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: worker-rs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      worker: 'true'
+  template:
+    metadata:
+      labels:
+        worker: 'true'
+    spec:
+      containers:
+        -
+          image: academiaonline/simplilearn-dockercoins:worker-latest
+          name: worker-container

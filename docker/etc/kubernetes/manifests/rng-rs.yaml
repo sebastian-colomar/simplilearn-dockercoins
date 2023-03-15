@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rng-rs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      rng: 'true'
+  template:
+    metadata:
+      labels:
+        rng: 'true'
+    spec:
+      containers:
+        -
+          image: academiaonline/simplilearn-dockercoins:rng-latest
+          name: rng-container

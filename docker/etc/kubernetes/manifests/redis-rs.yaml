@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: redis-rs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      redis: "true"
+  template:
+    metadata:
+      labels:
+        redis: "true"
+    spec:
+      containers:
+        -
+          image: redis:alpine
+          name: redis-container
+          volumeMounts:
+            -
+              mountPath: /data
+              name: redis-volume
+      volumes:
+        -
+          emptyDir: {}
+          name: redis-volume
