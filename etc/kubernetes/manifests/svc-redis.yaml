@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  ports:
+    -
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    redis-key: redis-value
+  type: ClusterIP
