@@ -6,6 +6,7 @@ GITHUB_BRANCH=main
 GITHUB_PROJECT=simplilearn-dockercoins
 GITHUB_RELEASE=test
 GITHUB_USERNAME=sebastian-colomar
+DOCKERHUB_USERNAME=academiaonline
 
 cd ${HOME}
 rm -rf ${GITHUB_PROJECT}/
@@ -17,21 +18,23 @@ git pull
 ```
 ## BUILD AND PUSH DOCKER IMAGES
 ```
+cd main/
+
 SERVICE=hasher
 docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${SERVICE}/
-docker image push ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
+docker image push ${DOCKERHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
 
 SERVICE=rng
 docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${SERVICE}/
-docker image push ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
+docker image push ${DOCKERHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
 
 SERVICE=webui
 docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${SERVICE}/
-docker image push ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
+docker image push ${DOCKERHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
 
 SERVICE=worker
 docker image build --file ${SERVICE}/Dockerfile --tag ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${SERVICE}/
-docker image push ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
+docker image push ${DOCKERHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE}
 
 ```
 ## CREATE DOCKER NETWORKS, VOLUMES AND CONTAINERS
@@ -70,7 +73,7 @@ ENTRYPOINT=/usr/local/bin/ruby
 SERVICE=hasher
 NETWORK=${SERVICE}
 VOLUME=${PWD}/${SERVICE}
-docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${DOCKERHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 docker container logs ${SERVICE}
 docker container stats --no-stream ${SERVICE}
@@ -81,7 +84,7 @@ ENTRYPOINT=/usr/local/bin/python
 SERVICE=rng
 NETWORK=${SERVICE}
 VOLUME=${PWD}/${SERVICE}
-docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${DOCKERHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 docker container logs ${SERVICE}
 docker container stats --no-stream ${SERVICE}
@@ -92,7 +95,7 @@ ENTRYPOINT=python
 SERVICE=worker
 NETWORK=redis
 VOLUME=${PWD}/${SERVICE}
-docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${DOCKERHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 NETWORK=hasher
 docker network connect ${NETWORK} ${SERVICE}
@@ -111,7 +114,7 @@ NETWORK=redis
 NODEPORT=80
 TARGETPORT=8080
 VOLUME=${PWD}/${SERVICE}
-docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --publish ${NODEPORT}:${TARGETPORT} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${GITHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
+docker container run --cpus ${CPUS} --detach --entrypoint ${ENTRYPOINT} --memory ${MEMORY} --name ${SERVICE} --network ${NETWORK} --publish ${NODEPORT}:${TARGETPORT} --read-only --restart always --user ${USER} --volume ${VOLUME}/:${WORKDIR}:ro --workdir ${WORKDIR} ${DOCKERHUB_USERNAME}/${GITHUB_PROJECT}:${GITHUB_RELEASE}-${SERVICE} ${CMD}
 
 docker container logs ${SERVICE}
 docker container stats --no-stream ${SERVICE}
