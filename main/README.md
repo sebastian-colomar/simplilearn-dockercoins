@@ -5,7 +5,7 @@
 GITHUB_BRANCH=main
 GITHUB_PROJECT=simplilearn-dockercoins
 GITHUB_RELEASE=test
-GITHUB_USERNAME=academiaonline
+GITHUB_USERNAME=sebastian-colomar
 
 cd ${HOME}
 rm -rf ${GITHUB_PROJECT}/
